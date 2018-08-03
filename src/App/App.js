@@ -7,10 +7,14 @@ const cols = 10;
 
 class App extends Component {
 
+  lifeProcess = null;
+
   state = {
     message: "Hello, React!",
     field: [],
-    fieldSize : 20
+    fieldSize : 50,
+    isRunning: false,
+    delay: 100
   };
 
   constructor(props) {
@@ -23,6 +27,65 @@ class App extends Component {
       ...this.state,
       field: this._setInitialField(size, size)
     });
+  }
+
+  handleClickCell = (i, j) => () => {
+    const newField = [...this.state.field];
+    newField[i][j] = newField[i][j] === 0 ? 1 : 0;
+    this.setState({
+      ...this.state,
+      field: newField
+    });
+  }
+
+  handleClickNextGen = e => {
+    e.preventDefault();
+
+    this.setState({
+      ...this.state,
+      field: this._nextGeneration()
+    });   
+  }
+
+  handleClickStart = () => {
+    this.setState({
+      ...this.state,
+      isRunning: true
+    });
+    this.lifeProcess = setInterval(() => {
+      this.setState({
+        ...this.state,
+        field: this._nextGeneration()
+      });
+    }, this.state.delay);
+  }
+
+  handleClickStop = () => {
+    clearInterval(this.lifeProcess);
+    this.setState({
+      ...this.state,
+      isRunning: false
+    });
+  }
+
+  handleClickNew = () => {
+    if (!this.state.isRunning) {
+      const size = this.state.fieldSize;
+      this.setState({
+        ...this.state,
+        field: this._setInitialField(size, size)
+      });
+    }
+  }
+
+  handleClickClear = () => {
+    if (!this.state.isRunning) {
+      const size = this.state.fieldSize;
+      this.setState({
+        ...this.state,
+        field: this._setEmptyField(size, size)
+      });
+    }
   }
 
   _setInitialField(rows, cols) {
@@ -47,43 +110,23 @@ class App extends Component {
     return field;
   }
 
-  handleClickCell = (i, j) => () => {
-    const newField = [...this.state.field];
-    newField[i][j] = newField[i][j] === 0 ? 1 : 0;
-    this.setState({
-      ...this.state,
-      field: newField
-    });
-  }
-
-  handleClickNextGen = e => {
-    e.preventDefault();
+  _nextGeneration = () => {
     const { field, fieldSize } = this.state;
     const tmp = this._setEmptyField(fieldSize, fieldSize);
     const MIN_NEIGHBORS = 2;
     const MAX_NEIGHBORS = 3;
-    //console.log(field);
-    for (let i = 0; i < fieldSize; i++) {
-        for (let j = 0; j < fieldSize; j++) {
-          //console.log(this._getNeighborsCount(i, j));
-            if (field[i][j] === 1) {
-//              tmp[i][j] = (this._getNeighborsCount(i, j) < MIN_NEIGHBORS || this._getNeighborsCount(i, j) > MAX_NEIGHBORS) ? 0 : 1;
-                if (this._getNeighborsCount(i, j) < MIN_NEIGHBORS || this._getNeighborsCount(i, j) > MAX_NEIGHBORS) {
-                    tmp[i][j] === 0;
-                } else {
-                    tmp[i][j] === 1;
-                }
-            } else {
-                if (this._getNeighborsCount(i, j) === MAX_NEIGHBORS) {
-                    tmp[i][j] === 1;
-                }
-            }
+    for (let i = 0; i < field.length; i++) {
+      for (let j = 0; j < field.length; j++) {
+        if (field[i][j] === 1) {
+          tmp[i][j] = (this._getNeighborsCount(i, j) < MIN_NEIGHBORS || this._getNeighborsCount(i, j) > MAX_NEIGHBORS) ? 0 : 1;
+        } else {
+          if (this._getNeighborsCount(i, j) === MAX_NEIGHBORS) {
+            tmp[i][j] = 1;
+          }
         }
+      }
     }
-    this.setState({
-      ...this.state,
-      field: tmp
-    });   
+    return tmp;
   }
 
   _getNeighborsCount = (i, j) => {
@@ -101,24 +144,31 @@ class App extends Component {
     }
     if (j - 1 >= 0 && field[i][j - 1] === 1) count++;
     if (j + 1 <= fieldSize - 1 && field[i][j + 1] === 1) count++;
-    //console.log(count);
     return count;
   }
-
 
   render() {
     const height = window.innerHeight;
     const width = window.innerWidth;
     const delta = 100;
     const cellSize = Math.floor((Math.min(height, width) - delta) / this.state.fieldSize);
-
-    console.log(height, width, cellSize);
+    //console.log(height, width, cellSize);
     return (
       <div className="row">
         <div className="col-12">
-          <Navbar handleClickNextGen={this.handleClickNextGen}/>
+          <Navbar isRunning={this.state.isRunning}
+                  handleClickNextGen={this.handleClickNextGen} 
+                  handleClickStart={this.handleClickStart}
+                  handleClickStop={this.handleClickStop}
+                  handleClickNew={this.handleClickNew}
+                  handleClickClear={this.handleClickClear}/>
           {
-            this.state.field && <Field field={this.state.field} cellSize={cellSize} handleClickCell={this.handleClickCell}/>
+            this.state.field &&
+              <div className="">
+                <Field field={this.state.field}
+                       cellSize={cellSize}
+                       handleClickCell={this.handleClickCell} />
+              </div>
           }
         </div>
       </div>
