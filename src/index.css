@@ -1,0 +1,16 @@
+.field {
+  border-collapse: collapse;
+}
+
+.cell {
+  border: 1px solid gray;
+  text-align: center;
+}
+
+.cell__gray {
+  background-color: lightgray;
+}
+
+.cell__white {
+  background-color: #fff;
+}
