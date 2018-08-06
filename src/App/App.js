@@ -2,8 +2,8 @@ import React, { Component } from 'react';
 import Field from '../Field/Field.js';
 import Navbar from '../Navbar/Navbar.js';
 
-const rows = 10;
-const cols = 10;
+//const rows = 10;
+//const cols = 10;
 
 class App extends Component {
 
@@ -12,14 +12,14 @@ class App extends Component {
   state = {
     message: "Hello, React!",
     field: [],
-    fieldSize : 50,
+    fieldSize : 20,
     isRunning: false,
     delay: 100
   };
 
-  constructor(props) {
-    super(props);
-  }
+//  constructor(props) {
+//    super(props);
+//  }
 
   componentDidMount() {
     const size = this.state.fieldSize;
@@ -148,11 +148,14 @@ class App extends Component {
   }
 
   render() {
+    const container = document.querySelector('.container');
     const height = window.innerHeight;
-    const width = window.innerWidth;
+    const width = container.offsetWidth;
     const delta = 100;
-    const cellSize = Math.floor((Math.min(height, width) - delta) / this.state.fieldSize);
-    //console.log(height, width, cellSize);
+    const len = width <= height ? width : height - delta;
+    const cellSize = Math.floor(len / this.state.fieldSize);
+    //const container = document.querySelector('.container');
+    console.log(container.height, container.width);
     return (
       <div className="row">
         <div className="col-12">
