@@ -9,10 +9,11 @@ const Field = ({field, cellSize, handleClickCell}) => (
           <tr className='cellsrow' key={i}>
             {
               field[i].map((cell, j) =>
-                <Cell key={j}
-                      isPopulate={cell ? true : false}
-                      cellSize={cellSize}
-                      handleClickCell={handleClickCell(i, j)}/>
+                <td key={j} className='cell p-0'>
+                  <Cell isPopulate={cell ? true : false}
+                        cellSize={cellSize}
+                        handleClickCell={handleClickCell(i, j)}/>
+                </td>
               )
             }
           </tr>

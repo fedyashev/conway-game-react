@@ -12,7 +12,7 @@ class App extends Component {
   state = {
     message: "Hello, React!",
     field: [],
-    fieldSize : 20,
+    fieldSize : 40,
     isRunning: false,
     delay: 100
   };
@@ -155,7 +155,7 @@ class App extends Component {
     const len = width <= height ? width : height - delta;
     const cellSize = Math.floor(len / this.state.fieldSize);
     //const container = document.querySelector('.container');
-    console.log(container.height, container.width);
+    //console.log(container.height, container.width);
     return (
       <div className="row">
         <div className="col-12">
